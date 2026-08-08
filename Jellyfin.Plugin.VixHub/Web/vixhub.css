@@ -19,6 +19,16 @@
   background-color: var(--vixhub-bg) !important;
 }
 
+/* Jellyfin renders native video behind its application shell. During
+   playback it makes that shell transparent; never let the theme's opaque
+   application background cover a healthy, decoding video frame. */
+.vixhub-route-playback body,
+.vixhub-route-playback .backgroundContainer,
+.vixhub-route-playback .skinBody {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 .vixhub-theme body {
   overflow-x: hidden;
   color: var(--vixhub-text);

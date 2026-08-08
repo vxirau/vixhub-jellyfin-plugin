@@ -11,7 +11,7 @@ VixHub packages a personalized Jellyfin home experience as one versioned release
 - personalized recommendations that exclude titles the current user has watched;
 - a coherent web design system for cards, controls, menus, dialogs, forms, and details.
 
-The plugin targets Jellyfin Server 12 and `net10.0`. Version `0.6.8.0` has
+The plugin targets Jellyfin Server 12 and `net10.0`. Version `0.6.9.0` has
 been validated with Jellyfin Server `12.0.0-rc4`.
 
 ## Why there is a bootstrap
@@ -34,7 +34,7 @@ Requires the .NET 10 SDK:
 ./scripts/package.sh
 ```
 
-The package is written to `artifacts/vixhub-plugin_0.6.8.0.zip`.
+The package is written to `artifacts/vixhub-plugin_0.6.9.0.zip`.
 
 ## Plugin repository
 
@@ -48,7 +48,7 @@ Jellyfin can then update the server plugin through its normal plugin update task
 
 ## Manual development installation
 
-1. Extract the plugin ZIP into the Jellyfin plugin directory as `VixHub Plugin_0.6.8.0`.
+1. Extract the plugin ZIP into the Jellyfin plugin directory as `VixHub Plugin_0.6.9.0`.
 2. Place `bootstrap/apply-web-customizations.sh` on persistent storage.
 3. Start the Jellyfin container through that script:
 

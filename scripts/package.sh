@@ -2,7 +2,7 @@
 set -eu
 
 repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-version="${VIXHUB_VERSION:-0.6.8.0}"
+version="${VIXHUB_VERSION:-0.6.9.0}"
 artifact_dir="$repo_dir/artifacts"
 publish_dir="$artifact_dir/publish"
 package_file="$artifact_dir/vixhub-plugin_$version.zip"
