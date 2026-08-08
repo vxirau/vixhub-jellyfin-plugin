@@ -13,8 +13,8 @@
         "changelog": "Adds a fixed discovery home, scroll-deferred rails, Live TV navigation, quieter card motion, broad component polish, playback-safe hero suspension, and native hero playback.",
         "targetAbi": "12.0.0.0",
         "sourceUrl": "https://github.com/vxirau/vixhub-jellyfin-plugin/releases/download/v0.6.9.0/vixhub-plugin_0.6.9.0.zip",
-        "checksum": "76F7237C7AB327077D738F0819FDED3A",
-        "timestamp": "2026-08-08T12:30:18Z"
+        "checksum": "53E42452C7D3001F2727A3712C8A7523",
+        "timestamp": "2026-08-08T12:34:02Z"
       }
     ]
   }
