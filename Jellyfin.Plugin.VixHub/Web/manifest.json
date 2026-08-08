@@ -1,0 +1,24 @@
+{
+    "name": "VixHub",
+    "description": "VixHub media",
+    "lang": "en-US",
+    "short_name": "VixHub",
+    "start_url": "/web/#/home",
+    "scope": "/web/",
+    "theme_color": "#101010",
+    "background_color": "#101010",
+    "display": "standalone",
+    "icons": [
+        {
+            "sizes": "144x144",
+            "src": "/VixHub/Assets/touchicon144.png",
+            "type": "image/png"
+        },
+        {
+            "sizes": "180x180",
+            "src": "/VixHub/Assets/touchicon.png",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

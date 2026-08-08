@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>VixHub · Plugin</title>
+</head>
+<body>
+<div id="VixHubPluginConfigPage" data-role="page" class="page type-interior pluginConfigurationPage">
+    <div data-role="content">
+        <div class="content-primary">
+            <form id="VixHubPluginConfigForm">
+                <h1>VixHub · Plugin</h1>
+                <p>Configure the web hero, navigation, local trailer playback, and VixHub home sections.</p>
+
+                <label class="checkboxContainer">
+                    <input is="emby-checkbox" type="checkbox" id="EnableHero">
+                    <span>Recommendation hero</span>
+                </label>
+                <label class="checkboxContainer">
+                    <input is="emby-checkbox" type="checkbox" id="EnableNavbar">
+                    <span>VixHub navigation and icons</span>
+                </label>
+                <label class="checkboxContainer">
+                    <input is="emby-checkbox" type="checkbox" id="EnableHomeSections">
+                    <span>Personalized VixHub home sections</span>
+                </label>
+                <label class="checkboxContainer">
+                    <input is="emby-checkbox" type="checkbox" id="EnableLocalTrailerVideo">
+                    <span>Muted local trailers in the hero</span>
+                </label>
+
+                <div class="inputContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="HeroHeightVh">Desktop hero height</label>
+                    <input is="emby-input" type="number" min="54" max="78" step="1" id="HeroHeightVh">
+                    <div class="fieldDescription">Percentage of the viewport height, clamped for smaller and larger screens.</div>
+                </div>
+
+                <button is="emby-button" type="submit" class="raised button-submit block">
+                    <span>Save</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+            var pluginId = "050ebc28-679f-4f80-9a74-89f4dc72fac6";
+            var page = document.querySelector("#VixHubPluginConfigPage");
+            var form = page.querySelector("#VixHubPluginConfigForm");
+
+            page.addEventListener("pageshow", function () {
+                Dashboard.showLoadingMsg();
+                ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                    ["EnableHero", "EnableNavbar", "EnableHomeSections", "EnableLocalTrailerVideo"]
+                        .forEach(function (key) {
+                            page.querySelector("#" + key).checked = Boolean(config[key]);
+                        });
+                    page.querySelector("#HeroHeightVh").value = config.HeroHeightVh || 64;
+                    Dashboard.hideLoadingMsg();
+                });
+            });
+
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+                Dashboard.showLoadingMsg();
+                ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                    ["EnableHero", "EnableNavbar", "EnableHomeSections", "EnableLocalTrailerVideo"]
+                        .forEach(function (key) {
+                            config[key] = page.querySelector("#" + key).checked;
+                        });
+                    config.HeroHeightVh = Math.max(
+                        54,
+                        Math.min(78, Number(page.querySelector("#HeroHeightVh").value) || 64)
+                    );
+                    return ApiClient.updatePluginConfiguration(pluginId, config);
+                }).then(function (result) {
+                    Dashboard.processPluginConfigurationUpdateResult(result);
+                });
+                return false;
+            });
+        }());
+    </script>
+</div>
+</body>
+</html>
