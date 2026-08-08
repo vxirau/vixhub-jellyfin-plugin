@@ -9,12 +9,12 @@
     "imageUrl": "https://raw.githubusercontent.com/vxirau/vixhub-jellyfin-plugin/main/Jellyfin.Plugin.VixHub/Web/vixhub-mark.png",
     "versions": [
       {
-        "version": "0.6.9.0",
-        "changelog": "Adds a fixed discovery home, scroll-deferred rails, Live TV navigation, quieter card motion, broad component polish, playback-safe hero suspension, and native hero playback.",
+        "version": "0.7.0.0",
+        "changelog": "Adds the complete ten-rail discovery home, Seerr-ranked popularity and artwork, fail-closed unwatched recommendations, native Live TV now-playing, resilient lazy loading and caching, wider series details, TV/mobile focus polish, and unobstructed native playback.",
         "targetAbi": "12.0.0.0",
-        "sourceUrl": "https://github.com/vxirau/vixhub-jellyfin-plugin/releases/download/v0.6.9.0/vixhub-plugin_0.6.9.0.zip",
-        "checksum": "53E42452C7D3001F2727A3712C8A7523",
-        "timestamp": "2026-08-08T12:34:02Z"
+        "sourceUrl": "https://github.com/vxirau/vixhub-jellyfin-plugin/releases/download/v0.7.0.0/vixhub-plugin_0.7.0.0.zip",
+        "checksum": "9EF0E55D7F73AEA649F8F02D90329BC2",
+        "timestamp": "2026-08-08T13:46:03Z"
       }
     ]
   }

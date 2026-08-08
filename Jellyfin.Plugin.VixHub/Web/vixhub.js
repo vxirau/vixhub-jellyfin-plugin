@@ -29,7 +29,9 @@
     discoveryLoading: false,
     discoveryObserver: null,
     discoveryScrollHandler: null,
+    imageObserver: null,
     playedSnapshotPromise: null,
+    libraryCatalogPromise: null,
     routeTransitionTimer: null,
     settings: {
       EnableHero: true,
@@ -54,6 +56,47 @@
     layers: '<path d="m12.83 2.18 8 4a2 2 0 0 1 0 3.58l-8 4a2 2 0 0 1-1.66 0l-8-4a2 2 0 0 1 0-3.58l8-4a2 2 0 0 1 1.66 0Z"/><path d="m22 12.5-9.17 4.59a2 2 0 0 1-1.66 0L2 12.5M22 17.5l-9.17 4.59a2 2 0 0 1-1.66 0L2 17.5"/>',
     radio: '<path d="M4.9 19.1a10 10 0 0 1 0-14.2M7.8 16.2a6 6 0 0 1 0-8.4M19.1 4.9a10 10 0 0 1 0 14.2M16.2 7.8a6 6 0 0 1 0 8.4"/><circle cx="12" cy="12" r="2"/>'
   };
+
+  // Seerr's curated studio and network artwork. VixHub only renders an entry
+  // when a matching facet exists in this Jellyfin library.
+  var SEERR_STUDIOS = [
+    { names: ["disney", "walt disney pictures"], path: "/wdrCwmRnLFJhEoH8GSfymY85KHT.png" },
+    { names: ["20th century studios", "20th century fox"], path: "/h0rjX5vjW5r8yEnUBStFarjcLT4.png" },
+    { names: ["sony pictures", "sony pictures entertainment"], path: "/GagSvqWlyPdkFHMfQ3pNq6ix9P.png" },
+    { names: ["warner bros pictures", "warner bros"], path: "/ky0xOc5OrhzkZ1N6KyUxacfQsCk.png" },
+    { names: ["universal pictures", "universal"], path: "/8lvHyhjr8oUKOOy2dKXoALWKdp0.png" },
+    { names: ["paramount pictures", "paramount"], path: "/fycMZt242LVjagMByZOLUGbCvv3.png" },
+    { names: ["pixar", "pixar animation studios"], path: "/1TjvGVDMYsj6JBxOAkUHpPEwLf7.png" },
+    { names: ["dreamworks", "dreamworks animation"], path: "/kP7t6RwGz2AvvTkvnI1uteEwHet.png" },
+    { names: ["marvel studios"], path: "/hUzeosd33nzE5MCNsZxCGEKTXaQ.png" },
+    { names: ["dc", "dc entertainment", "dc studios"], path: "/2Tc1P3Ac8M479naPp1kYT3izLS5.png" },
+    { names: ["a24"], path: "/1ZXsGaFPgrgS6ZZGS37AqD5uU12.png" }
+  ];
+
+  var SEERR_NETWORKS = [
+    { names: ["netflix"], path: "/wwemzKWzjKYJFfCeiB57q3r4Bcm.png" },
+    { names: ["disney+", "disney plus"], path: "/gJ8VX6JSu3ciXHuC2dDGAo2lvwM.png" },
+    { names: ["prime video", "amazon prime video", "amazon"], path: "/ifhbNuuVnlwYy5oXA5VIb2YR8AZ.png" },
+    { names: ["apple tv+", "apple tv plus", "apple tv"], path: "/4KAy34EHvRM25Ih8wb82AuGU7zJ.png" },
+    { names: ["hulu"], path: "/pqUTCleNUiTLAVlelGxUgWn1ELh.png" },
+    { names: ["hbo", "max", "hbo max"], path: "/tuomPhY2UtuPTqqFnKMVHvSb724.png" },
+    { names: ["discovery+", "discovery plus"], path: "/1D1bS3Dyw4ScYnFWTlBOvJXC3nb.png" },
+    { names: ["abc"], path: "/ndAvF4JLsliGreX87jAc9GdjmJY.png" },
+    { names: ["fox"], path: "/1DSpHrWyOORkL9N2QHX7Adt31mQ.png" },
+    { names: ["cinemax"], path: "/6mSHSquNpfLgDdv6VnOOvC5Uz2h.png" },
+    { names: ["amc"], path: "/pmvRmATOCaDykE6JrVoeYxlFHw3.png" },
+    { names: ["showtime"], path: "/Allse9kbjiP6ExaQrnSpIhkurEi.png" },
+    { names: ["starz"], path: "/8GJjw3HHsAJYwIWKIPBPfqMxlEa.png" },
+    { names: ["the cw", "cw"], path: "/ge9hzeaU7nMtQ4PjkFlc68dGAJ9.png" },
+    { names: ["nbc"], path: "/o3OedEP0f9mfZr33jz2BfXOUK5.png" },
+    { names: ["cbs"], path: "/nm8d7P7MJNiBLdgIzUK0gkuEA4r.png" },
+    { names: ["paramount+", "paramount plus"], path: "/fi83B1oztoS47xxcemFdPMhIzK.png" },
+    { names: ["bbc one", "bbc"], path: "/mVn7xESaTNmjBUyUtGNvDQd3CT1.png" },
+    { names: ["cartoon network"], path: "/c5OC6oVCg6QP4eqzW6XIq17CQjI.png" },
+    { names: ["adult swim"], path: "/9AKyspxVzywuaMuZ1Bvilu8sXly.png" },
+    { names: ["nickelodeon"], path: "/ikZXxg6GnwpzqiZbRPhJGaZapqB.png" },
+    { names: ["peacock"], path: "/gIAcGTjKKr0KOHL5s4O36roJ8p7.png" }
+  ];
 
   function lucideSvg(name) {
     return '<svg data-vixhub-icon="' + name + '" class="vixhub-lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
@@ -656,8 +699,8 @@
       twoDigits(state.index + 1) + " / " + twoDigits(state.items.length)
     );
     var progress = element("span", "vixhub-hero__progress");
-    var progressValue = element("span", "vixhub-hero__progress-value");
-    progressValue.style.transform = "scaleX(" + ((state.index + 1) / state.items.length) + ")";
+      var progressValue = element("span", "vixhub-hero__progress-value");
+      progressValue.style.width = ((state.index + 1) / state.items.length * 100) + "%";
     progress.appendChild(progressValue);
     dots.appendChild(counter);
     dots.appendChild(progress);
@@ -997,13 +1040,34 @@
   }
 
   function discoveryCacheKey() {
-    return "vixhub-discovery:v1:" + (currentUserId() || "anonymous");
+    return "vixhub-discovery:v5:" + (currentUserId() || "anonymous");
+  }
+
+  function isCompleteDiscovery(data) {
+    return Boolean(data && [
+      "popularSeries",
+      "recentSeries",
+      "seriesGenres",
+      "popularMovies",
+      "recentMovies",
+      "movieGenres",
+      "topPicks",
+      "studios",
+      "networks",
+      "livePrograms"
+    ].every(function (key) {
+      return Array.isArray(data[key]) && data[key].length > 0;
+    }));
   }
 
   function readDiscoveryCache() {
     try {
       var cached = JSON.parse(window.sessionStorage.getItem(discoveryCacheKey()));
-      if (cached && Date.now() - cached.savedAt < CACHE_TTL_MS * 2) return cached.data;
+      if (
+        cached &&
+        Date.now() - cached.savedAt < CACHE_TTL_MS * 2 &&
+        isCompleteDiscovery(cached.data)
+      ) return cached.data;
     } catch (error) {
       // Discovery remains available without browser storage.
     }
@@ -1011,6 +1075,9 @@
   }
 
   function writeDiscoveryCache(data) {
+    // A transient backend or startup failure must not turn into a long-lived,
+    // apparently missing homepage section on every subsequent route visit.
+    if (!isCompleteDiscovery(data)) return;
     try {
       window.sessionStorage.setItem(discoveryCacheKey(), JSON.stringify({
         savedAt: Date.now(),
@@ -1019,6 +1086,282 @@
     } catch (error) {
       // Discovery remains available without browser storage.
     }
+  }
+
+  function normalizeFacetName(value) {
+    return String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9+]+/g, " ")
+      .trim();
+  }
+
+  function providerTmdbId(item) {
+    var ids = item && item.ProviderIds || {};
+    return String(ids.Tmdb || ids.TMDB || ids.tmdb || "");
+  }
+
+  function seerrImageUrl(path, kind) {
+    if (!path) return "";
+    return apiUrl("/VixHub/SeerrImage", {
+      path: path,
+      kind: kind || "backdrop"
+    });
+  }
+
+  function loadAuthenticatedImage(image, url) {
+    function load() {
+      window.fetch(url, {
+        cache: "force-cache",
+        credentials: "same-origin",
+        headers: { Authorization: 'MediaBrowser Token="' + apiToken() + '"' }
+      }).then(function (response) {
+        if (!response.ok) throw new Error("VixHub artwork request failed: " + response.status);
+        return response.blob();
+      }).then(function (blob) {
+        var objectUrl = URL.createObjectURL(blob);
+        image.addEventListener("load", function () { URL.revokeObjectURL(objectUrl); }, { once: true });
+        image.src = objectUrl;
+      }).catch(function () {
+        image.classList.add("vixhub-image-unavailable");
+      });
+    }
+    if (!("IntersectionObserver" in window)) {
+      load();
+      return;
+    }
+    if (!state.imageObserver) {
+      state.imageObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          state.imageObserver.unobserve(entry.target);
+          var loader = entry.target.vixhubImageLoader;
+          delete entry.target.vixhubImageLoader;
+          if (loader) loader();
+        });
+      }, { rootMargin: "320px 640px" });
+    }
+    image.vixhubImageLoader = load;
+    state.imageObserver.observe(image);
+  }
+
+  function fetchSeerr(resource, params) {
+    return apiJson("/VixHub/Seerr", Object.assign({ resource: resource }, params || {}))
+      .catch(function () { return null; });
+  }
+
+  function fetchSeerrPages(resource, pageCount) {
+    var requests = [];
+    for (var page = 1; page <= pageCount; page += 1) {
+      requests.push(fetchSeerr(resource, { page: page }));
+    }
+    return Promise.all(requests).then(function (pages) {
+      var seen = {};
+      var results = [];
+      pages.forEach(function (data) {
+        (data && data.results || []).forEach(function (item) {
+          var key = String(item.id || "");
+          if (!key || seen[key]) return;
+          seen[key] = true;
+          results.push(item);
+        });
+      });
+      return results;
+    });
+  }
+
+  function fetchLibraryCatalog() {
+    if (state.libraryCatalogPromise) return state.libraryCatalogPromise;
+    state.libraryCatalogPromise = apiJson("/Users/" + currentUserId() + "/Items", {
+      recursive: true,
+      includeItemTypes: "Movie,Series",
+      sortBy: "SortName",
+      sortOrder: "Ascending",
+      limit: 10000,
+      enableTotalRecordCount: false,
+      fields: "PrimaryImageAspectRatio,ImageTags,BackdropImageTags,ProductionYear,CommunityRating,OfficialRating,DateCreated,UserData,ProviderIds,Genres,Studios"
+    }).then(function (result) {
+      return (result.Items || []).filter(function (item) {
+        return providerTmdbId(item) && item.ImageTags && item.ImageTags.Primary;
+      });
+    }).catch(function () {
+      return [];
+    });
+    return state.libraryCatalogPromise;
+  }
+
+  function catalogByTmdb(items, mediaType) {
+    var result = {};
+    items.forEach(function (item) {
+      var isExpectedType = mediaType === "Movie" ? item.Type === "Movie" : item.Type === "Series";
+      var id = providerTmdbId(item);
+      if (isExpectedType && id) result[id] = item;
+    });
+    return result;
+  }
+
+  function rankLibraryFromSeerr(seerrItems, catalog, mediaType) {
+    var byTmdb = catalogByTmdb(catalog, mediaType);
+    var seen = {};
+    return seerrItems.map(function (seerrItem) {
+      return byTmdb[String(seerrItem.id || "")];
+    }).filter(function (item) {
+      if (!item || seen[item.Id]) return false;
+      seen[item.Id] = true;
+      return true;
+    }).slice(0, 18);
+  }
+
+  function decorateGenres(localGenres, seerrGenres) {
+    var byName = {};
+    (seerrGenres || []).forEach(function (genre) {
+      byName[normalizeFacetName(genre.name)] = genre;
+    });
+    return localGenres.map(function (genre) {
+      var seerrGenre = byName[normalizeFacetName(genre.Name)];
+      var backdrops = seerrGenre && seerrGenre.backdrops || [];
+      return Object.assign({}, genre, {
+        CoverPath: backdrops[4] || backdrops[0] || ""
+      });
+    }).filter(function (genre) {
+      return genre.CoverPath;
+    });
+  }
+
+  function decorateBrandFacets(localFacets, definitions) {
+    return definitions.map(function (definition) {
+      var match = localFacets.find(function (facet) {
+        var name = normalizeFacetName(facet.Name);
+        return definition.names.some(function (candidate) {
+          var normalizedCandidate = normalizeFacetName(candidate);
+          return name === normalizedCandidate ||
+            name.indexOf(normalizedCandidate) !== -1 ||
+            normalizedCandidate.indexOf(name) !== -1;
+        });
+      });
+      return match ? Object.assign({}, match, { LogoPath: definition.path }) : null;
+    }).filter(Boolean);
+  }
+
+  function chooseRecommendationSeeds(items) {
+    var result = [];
+    var counts = { Movie: 0, Series: 0 };
+    items.forEach(function (item) {
+      if (result.length >= 6 || !providerTmdbId(item) || counts[item.Type] >= 3) return;
+      counts[item.Type] += 1;
+      result.push(item);
+    });
+    return result;
+  }
+
+  function interleaveMediaTypes(items, limit) {
+    var movies = items.filter(function (item) { return item.Type === "Movie"; });
+    var series = items.filter(function (item) { return item.Type === "Series"; });
+    var result = [];
+    var movieIndex = 0;
+    var seriesIndex = 0;
+    var nextType = movies.length && series.length ? "Movie" : (movies.length ? "Movie" : "Series");
+    while (result.length < limit && (movieIndex < movies.length || seriesIndex < series.length)) {
+      if (nextType === "Movie" && movieIndex < movies.length) {
+        result.push(movies[movieIndex++]);
+        nextType = "Series";
+      } else if (seriesIndex < series.length) {
+        result.push(series[seriesIndex++]);
+        nextType = "Movie";
+      } else if (movieIndex < movies.length) {
+        result.push(movies[movieIndex++]);
+      }
+    }
+    return result;
+  }
+
+  function fetchTopPicks(catalog, popularMovies, popularSeries) {
+    var seedNames = [];
+    var playedSnapshot = { ids: null, items: [] };
+    return Promise.all([
+      apiJson("/Users/" + currentUserId() + "/Items", {
+        recursive: true,
+        includeItemTypes: "Movie,Series",
+        filters: "IsPlayed",
+        sortBy: "DatePlayed",
+        sortOrder: "Descending",
+        limit: 200,
+        enableTotalRecordCount: false,
+        fields: "ProviderIds,UserData"
+      }),
+      fetchPlayedSnapshot()
+    ]).then(function (results) {
+      var result = results[0];
+      playedSnapshot = results[1];
+      if (!playedSnapshot.ids) return [];
+      var seeds = chooseRecommendationSeeds(result.Items || []);
+      seedNames = seeds.map(function (seed) { return seed.Name; }).filter(Boolean);
+      return Promise.all(seeds.map(function (seed, seedIndex) {
+        return Promise.all([
+          fetchSeerr(
+            seed.Type === "Movie" ? "movie-recommendations" : "tv-recommendations",
+            { tmdbId: providerTmdbId(seed), page: 1 }
+          ),
+          apiJson("/Items/" + seed.Id + "/Similar", {
+            userId: currentUserId(),
+            limit: 30,
+            fields: "PrimaryImageAspectRatio,ImageTags,ProductionYear,CommunityRating,UserData,ProviderIds",
+            enableTotalRecordCount: false
+          }).catch(function () { return { Items: [] }; })
+        ]).then(function (sources) {
+          return {
+            seedIndex: seedIndex,
+            mediaType: seed.Type,
+            seerr: sources[0] && sources[0].results || [],
+            similar: sources[1] && sources[1].Items || []
+          };
+        });
+      }));
+    }).then(function (recommendationGroups) {
+      var movieMap = catalogByTmdb(catalog, "Movie");
+      var seriesMap = catalogByTmdb(catalog, "Series");
+      var scores = {};
+      recommendationGroups.forEach(function (group) {
+        group.seerr.forEach(function (result, rank) {
+          var item = (group.mediaType === "Movie" ? movieMap : seriesMap)[String(result.id || "")];
+          if (!isVerifiedUnplayed(item, playedSnapshot)) return;
+          var entry = scores[item.Id] || { item: item, score: 0 };
+          entry.score += 120 - group.seedIndex * 12 - rank;
+          scores[item.Id] = entry;
+        });
+        group.similar.forEach(function (item, rank) {
+          var catalogItem = catalog.find(function (candidate) { return candidate.Id === item.Id; });
+          if (!isVerifiedUnplayed(catalogItem, playedSnapshot)) return;
+          var entry = scores[catalogItem.Id] || { item: catalogItem, score: 0 };
+          entry.score += 96 - group.seedIndex * 10 - rank;
+          scores[catalogItem.Id] = entry;
+        });
+      });
+      var ranked = Object.keys(scores).map(function (id) { return scores[id]; })
+        .sort(function (left, right) { return right.score - left.score; })
+        .map(function (entry) { return entry.item; });
+      var seen = {};
+      var combined = ranked.concat(interleaveMediaTypes(popularMovies.concat(popularSeries), 24))
+        .filter(function (item) {
+          if (!isVerifiedUnplayed(item, playedSnapshot) || seen[item.Id]) return false;
+          seen[item.Id] = true;
+          return true;
+        });
+      return {
+        items: interleaveMediaTypes(combined, 16),
+        personalizedCount: ranked.length,
+        seedNames: seedNames
+      };
+    }).catch(function () {
+      return {
+        items: interleaveMediaTypes(popularMovies.concat(popularSeries), 16).filter(function (item) {
+          return isVerifiedUnplayed(item, playedSnapshot);
+        }),
+        personalizedCount: 0,
+        seedNames: seedNames
+      };
+    });
   }
 
   function fetchLibraryRail(itemType, sortBy, sortOrder) {
@@ -1058,47 +1401,47 @@
     });
   }
 
-  function fetchLivePrograms() {
-    return apiJson("/LiveTv/Programs", {
-      userId: currentUserId(),
-      isAiring: true,
-      limit: 18,
-      enableTotalRecordCount: false,
-      fields: "ImageTags,PrimaryImageAspectRatio,ChannelInfo,StartDate,EndDate"
-    }).then(function (result) {
-      return result.Items || [];
-    }).catch(function () {
-      return [];
-    });
-  }
-
   function fetchDiscovery() {
     var cached = readDiscoveryCache();
     if (cached) return Promise.resolve(cached);
     return Promise.all([
-      fetchLibraryRail("Series", "CommunityRating,ProductionYear"),
+      fetchLibraryCatalog(),
+      fetchSeerrPages("popular-tv", 5),
       fetchLibraryRail("Series", "DateCreated"),
       fetchFacets("/Genres", "Series"),
-      fetchLibraryRail("Movie", "CommunityRating,ProductionYear"),
+      fetchSeerrPages("popular-movies", 5),
       fetchLibraryRail("Movie", "DateCreated"),
       fetchFacets("/Genres", "Movie"),
       fetchFacets("/Studios", "Movie"),
       fetchFacets("/Studios", "Series"),
-      fetchLivePrograms()
+      fetchSeerr("tv-genres"),
+      fetchSeerr("movie-genres"),
+      apiJson("/VixHub/LiveTvPrograms", { limit: 18 })
+        .catch(function () { return { Items: [] }; })
     ]).then(function (results) {
+      var catalog = results[0];
+      var popularSeries = rankLibraryFromSeerr(results[1], catalog, "Series");
+      var popularMovies = rankLibraryFromSeerr(results[4], catalog, "Movie");
       var data = {
-        popularSeries: results[0],
-        recentSeries: results[1],
-        seriesGenres: results[2],
-        popularMovies: results[3],
-        recentMovies: results[4],
-        movieGenres: results[5],
-        studios: results[6],
-        networks: results[7],
-        livePrograms: results[8]
+        popularSeries: popularSeries,
+        recentSeries: results[2],
+        seriesGenres: decorateGenres(results[3], results[9]),
+        popularMovies: popularMovies,
+        recentMovies: results[5],
+        movieGenres: decorateGenres(results[6], results[10]),
+        studios: decorateBrandFacets(results[7], SEERR_STUDIOS),
+        networks: decorateBrandFacets(results[8], SEERR_NETWORKS),
+        livePrograms: results[11] && results[11].Items || [],
+        topPicks: []
       };
-      writeDiscoveryCache(data);
-      return data;
+      return fetchTopPicks(catalog, popularMovies, popularSeries).then(function (topPicks) {
+        data.topPicks = topPicks.items;
+        data.topPicksEyebrow = topPicks.personalizedCount && topPicks.seedNames.length
+          ? "Because you watched " + topPicks.seedNames.slice(0, 2).join(" and ")
+          : "Popular and unwatched in your library";
+        writeDiscoveryCache(data);
+        return data;
+      });
     });
   }
 
@@ -1107,6 +1450,45 @@
     var section = createHomeSection({ title: title, items: items });
     section.removeAttribute("id");
     section.classList.add("vixhub-discovery-section");
+    return section;
+  }
+
+  function createPosterSection(title, items, eyebrow) {
+    if (!items || !items.length) return null;
+    var section = element("section", "vixhub-home-section vixhub-poster-section vixhub-discovery-section");
+    section.setAttribute("aria-label", title);
+    var heading = element("div", "vixhub-home-section__heading");
+    if (eyebrow) heading.appendChild(element("span", "vixhub-home-section__eyebrow", eyebrow));
+    heading.appendChild(element("h2", "vixhub-home-section__title", title));
+    section.appendChild(heading);
+    var rail = element("div", "vixhub-poster-rail");
+    items.forEach(function (item) {
+      var link = element("a", "vixhub-poster-card");
+      link.href = "#/details?id=" + encodeURIComponent(item.Id) +
+        "&serverId=" + encodeURIComponent(serverId());
+      link.setAttribute("aria-label", item.Name);
+      link.dataset.itemtype = item.Type || "";
+      link.dataset.played = item.UserData && item.UserData.Played ? "true" : "false";
+      var image = element("img", "vixhub-poster-card__image");
+      image.alt = "";
+      image.loading = "lazy";
+      image.decoding = "async";
+      image.src = imageUrl(item, "Primary", 420);
+      var body = element("span", "vixhub-poster-card__body");
+      body.appendChild(element("span", "vixhub-poster-card__title", item.Name));
+      body.appendChild(element(
+        "span",
+        "vixhub-poster-card__meta",
+        [
+          item.ProductionYear,
+          item.CommunityRating ? "★ " + item.CommunityRating.toFixed(1) : ""
+        ].filter(Boolean).join("  ·  ")
+      ));
+      link.appendChild(image);
+      link.appendChild(body);
+      rail.appendChild(link);
+    });
+    section.appendChild(rail);
     return section;
   }
 
@@ -1130,7 +1512,23 @@
     items.slice(0, 24).forEach(function (item, index) {
       var link = element("a", "vixhub-facet-card");
       link.href = facetHref(kind, item, mediaType);
+      link.setAttribute("aria-label", item.Name);
       link.style.setProperty("--vixhub-facet-index", String(index % 6));
+      if (item.CoverPath || item.LogoPath) {
+        var image = element(
+          "img",
+          item.LogoPath ? "vixhub-facet-card__image vixhub-facet-card__image--logo" : "vixhub-facet-card__image"
+        );
+        image.alt = "";
+        image.loading = "lazy";
+        image.decoding = "async";
+        loadAuthenticatedImage(
+          image,
+          seerrImageUrl(item.LogoPath || item.CoverPath, item.LogoPath ? "logo" : "backdrop")
+        );
+        link.appendChild(image);
+        link.appendChild(element("span", "vixhub-facet-card__shade"));
+      }
       link.appendChild(element("span", "vixhub-facet-card__name", item.Name));
       link.appendChild(element("span", "vixhub-facet-card__arrow material-icons", "arrow_forward"));
       rail.appendChild(link);
@@ -1139,17 +1537,45 @@
     return section;
   }
 
-  function createLiveSection(programs) {
-    var section = programs && programs.length
-      ? createDiscoveryRail("Live now", programs)
-      : element("section", "vixhub-home-section vixhub-live-promo");
-    if (!programs || !programs.length) {
-      section.setAttribute("aria-label", "Live TV");
-      var link = element("a", "vixhub-live-promo__link");
-      link.href = "#/livetv";
-      link.innerHTML = lucideSvg("radio") + '<span><strong>Live TV</strong><small>Channels, guide, and what is on now</small></span><span class="material-icons" aria-hidden="true">arrow_forward</span>';
-      section.appendChild(link);
-    }
+  function createLiveTvSection(items) {
+    if (!items || !items.length) return null;
+    var section = element("section", "vixhub-home-section vixhub-live-section vixhub-discovery-section");
+    section.setAttribute("aria-label", "Live TV on now");
+    var heading = element("div", "vixhub-home-section__heading vixhub-live-section__heading");
+    heading.appendChild(element("h2", "vixhub-home-section__title", "Live TV · On now"));
+    var guide = element("a", "vixhub-live-section__guide", "Open guide");
+    guide.href = "#/livetv?tab=1";
+    heading.appendChild(guide);
+    section.appendChild(heading);
+    var rail = element("div", "vixhub-home-section__rail vixhub-live-section__rail");
+    items.forEach(function (item) {
+      var link = element("a", "vixhub-home-card vixhub-live-card");
+      link.href = "#/details?id=" + encodeURIComponent(item.Id) + "&serverId=" + encodeURIComponent(serverId());
+      link.setAttribute("aria-label", (item.Name || "Live program") + " on " + (item.ChannelName || "Live TV"));
+      var image = element("img", "vixhub-home-card__image");
+      image.alt = "";
+      image.loading = "lazy";
+      image.decoding = "async";
+      image.src = imageUrl(item, "Thumb", 720) || imageUrl(item, "Primary", 720) || imageUrl(item, "Backdrop", 720);
+      var wash = element("span", "vixhub-home-card__wash");
+      var body = element("span", "vixhub-home-card__body vixhub-live-card__body");
+      body.appendChild(element("span", "vixhub-live-card__badge", "LIVE"));
+      body.appendChild(element("span", "vixhub-home-card__title", item.Name || "Live TV"));
+      body.appendChild(element("span", "vixhub-home-card__meta", item.ChannelName || "Live TV"));
+      var start = Date.parse(item.StartDate || "");
+      var end = Date.parse(item.EndDate || "");
+      var progress = end > start ? Math.max(0, Math.min(1, (Date.now() - start) / (end - start))) : 0;
+      var progressBar = element("span", "vixhub-live-card__progress");
+      var progressValue = element("span", "vixhub-live-card__progress-value");
+      progressValue.style.transform = "scaleX(" + progress + ")";
+      progressBar.appendChild(progressValue);
+      link.appendChild(image);
+      link.appendChild(wash);
+      link.appendChild(body);
+      link.appendChild(progressBar);
+      rail.appendChild(link);
+    });
+    section.appendChild(rail);
     return section;
   }
 
@@ -1157,15 +1583,16 @@
     var root = element("div", "vixhub-discovery");
     root.id = DISCOVERY_ID;
     [
-      createDiscoveryRail("Popular TV shows", data.popularSeries),
-      createDiscoveryRail("Recently added TV shows", data.recentSeries),
+      createPosterSection("Popular TV shows", data.popularSeries),
+      createPosterSection("Recently added TV shows", data.recentSeries),
       createFacetSection("Series genres", data.seriesGenres, "genre", "Series"),
-      createDiscoveryRail("Popular movies", data.popularMovies),
-      createDiscoveryRail("Recently added movies", data.recentMovies),
+      createPosterSection("Popular movies", data.popularMovies),
+      createPosterSection("Recently added movies", data.recentMovies),
       createFacetSection("Movie genres", data.movieGenres, "genre", "Movie"),
+      createPosterSection("Top picks for you", data.topPicks, data.topPicksEyebrow),
       createFacetSection("Studios", data.studios, "studio", "Movie"),
       createFacetSection("Networks", data.networks, "studio", "Series"),
-      createLiveSection(data.livePrograms)
+      createLiveTvSection(data.livePrograms)
     ].forEach(function (section) {
       if (section) root.appendChild(section);
     });
@@ -1188,11 +1615,12 @@
         return;
       }
       placeholder.replaceWith(buildDiscovery(data));
+      var oldRecommendations = document.getElementById(HOME_SECTION_ID);
+      if (oldRecommendations) oldRecommendations.remove();
       enforceHomeLayout();
-      mountHomeSections();
     }).catch(function () {
       placeholder.remove();
-      mountHomeSections();
+      if (!state.settings.EnableDiscovery) mountHomeSections();
     }).finally(function () {
       state.discoveryLoading = false;
     });
@@ -1208,13 +1636,25 @@
     placeholder.setAttribute("aria-label", "More to discover");
     container.appendChild(placeholder);
     enforceHomeLayout();
-    state.discoveryScrollHandler = function () {
-      if (window.scrollY < 240) return;
+    function activateDiscovery() {
+      if (state.discoveryObserver) state.discoveryObserver.disconnect();
+      state.discoveryObserver = null;
       window.removeEventListener("scroll", state.discoveryScrollHandler);
       state.discoveryScrollHandler = null;
       loadDiscoverySections(placeholder);
-    };
-    window.addEventListener("scroll", state.discoveryScrollHandler, { passive: true });
+    }
+    if ("IntersectionObserver" in window) {
+      state.discoveryObserver = new IntersectionObserver(function (entries) {
+        if (entries.some(function (entry) { return entry.isIntersecting; })) activateDiscovery();
+      }, { rootMargin: "360px 0px" });
+      state.discoveryObserver.observe(placeholder);
+    } else {
+      state.discoveryScrollHandler = function () {
+        if (window.scrollY < 80) return;
+        activateDiscovery();
+      };
+      window.addEventListener("scroll", state.discoveryScrollHandler, { passive: true });
+    }
   }
 
   function scheduleDeferredHome() {
@@ -1236,6 +1676,11 @@
 
   function ensureLiveTvBrowseCard(browseSection) {
     if (!browseSection || browseSection.querySelector(".vixhub-live-library-card")) return;
+    var existingLiveTv = Array.prototype.some.call(browseSection.querySelectorAll("a,.card"), function (node) {
+      return /^#\/livetv/i.test(node.getAttribute("href") || "") ||
+        /^(live tv|televisi[oó]n en directo|televis[aã]o ao vivo|télévision en direct)$/i.test((node.textContent || "").trim());
+    });
+    if (existingLiveTv) return;
     var items = browseSection.querySelector(".itemsContainer");
     var reference = items && items.querySelector(".card");
     if (!items || !reference) return;
@@ -1274,9 +1719,22 @@
     var nativeSections = Array.prototype.filter.call(container.children, function (section) {
       return section.id !== DISCOVERY_ID && section.id !== HOME_SECTION_ID;
     });
-    var browse = nativeSections.find(function (section) { return /^(my media|browse)$/i.test(sectionHeading(section)); });
-    var continueWatching = nativeSections.find(function (section) { return /^continue watching$/i.test(sectionHeading(section)); });
-    var nextUp = nativeSections.find(function (section) { return /^next up$/i.test(sectionHeading(section)); });
+    var browse = nativeSections.find(function (section) {
+      return /^(my media|browse|mis contenidos|meus conteudos|mes medias|i miei media|meine medien)$/i.test(sectionHeading(section));
+    }) || nativeSections.find(function (section) {
+      return Boolean(section.querySelector(".card[data-collectiontype],.card[data-isfolder='true']"));
+    });
+    var continueWatching = nativeSections.find(function (section) {
+      return /^(continue watching|seguir viendo|continuar a ver|reprendre la lecture|continua a guardare|weiterschauen)$/i.test(sectionHeading(section));
+    });
+    var nextUp = nativeSections.find(function (section) {
+      return /^(next up|a continuaci[oó]n|a seguir|a suivre|prossimi episodi|als nächstes)$/i.test(sectionHeading(section));
+    });
+    var liveTvSections = nativeSections.filter(function (section) {
+      return /live\s*tv|on now|upcoming/i.test(sectionHeading(section)) || Boolean(section.querySelector(
+        ".card[data-type='Program'],.card[data-channelid],a[href^='#/livetv']"
+      ));
+    });
 
     if (browse) {
       var browseHeading = browse.querySelector("h1,h2,h3,.sectionTitle");
@@ -1285,11 +1743,11 @@
       if (browse.hidden) browse.hidden = false;
       ensureLiveTvBrowseCard(browse);
     }
-    [continueWatching, nextUp].forEach(function (section) {
+    [continueWatching, nextUp].concat(liveTvSections).forEach(function (section) {
       if (section && section.hidden) section.hidden = false;
     });
     nativeSections.forEach(function (section) {
-      if (section !== browse && section !== continueWatching && section !== nextUp) {
+      if (section !== browse && section !== continueWatching && section !== nextUp && liveTvSections.indexOf(section) === -1) {
         if (!section.hidden) section.hidden = true;
         if (section.dataset.vixhubManagedHidden !== "true") section.dataset.vixhubManagedHidden = "true";
       }
@@ -1300,7 +1758,9 @@
       nextUp,
       document.getElementById(DISCOVERY_ID),
       document.getElementById(HOME_SECTION_ID)
-    ].filter(Boolean);
+    ].concat(liveTvSections).filter(Boolean).filter(function (section, index, sections) {
+      return sections.indexOf(section) === index;
+    });
     var visible = Array.prototype.filter.call(container.children, function (section) {
       return !section.hidden;
     });

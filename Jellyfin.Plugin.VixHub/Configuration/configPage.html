@@ -49,9 +49,27 @@
                 </div>
 
                 <div class="inputContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="SeerrApiKey">Seerr API key</label>
+                    <input is="emby-input" type="password" id="SeerrApiKey" autocomplete="off">
+                    <div class="fieldDescription">Used only by the Jellyfin server to retrieve Seerr rankings and artwork. It is never returned to regular clients.</div>
+                </div>
+
+                <div class="inputContainer">
                     <label class="inputLabel inputLabelUnfocused" for="SeerrUrl">Seerr server URL</label>
                     <input is="emby-input" type="url" id="SeerrUrl" placeholder="http://seerr:5055">
                     <div class="fieldDescription">Server-side Seerr address. The library remains the authority, so VixHub never displays unavailable titles.</div>
+                </div>
+
+                <div class="inputContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="JellyfinApiKey">Jellyfin API key for Live TV</label>
+                    <input is="emby-input" type="password" id="JellyfinApiKey" autocomplete="off">
+                    <div class="fieldDescription">Optional server-side bridge for Jellyfin 12 preview builds that return an empty guide to migrated user sessions. The key never leaves the server.</div>
+                </div>
+
+                <div class="inputContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="JellyfinUrl">Internal Jellyfin URL</label>
+                    <input is="emby-input" type="url" id="JellyfinUrl" placeholder="http://127.0.0.1:8096">
+                    <div class="fieldDescription">The container-local Jellyfin address used only for the protected Live TV bridge.</div>
                 </div>
 
                 <button is="emby-button" type="submit" class="raised button-submit block">
@@ -77,6 +95,9 @@
                         });
                     page.querySelector("#HeroHeightVh").value = config.HeroHeightVh || 64;
                     page.querySelector("#SeerrUrl").value = config.SeerrUrl || "http://seerr:5055";
+                    page.querySelector("#SeerrApiKey").value = config.SeerrApiKey || "";
+                    page.querySelector("#JellyfinUrl").value = config.JellyfinUrl || "http://127.0.0.1:8096";
+                    page.querySelector("#JellyfinApiKey").value = config.JellyfinApiKey || "";
                     Dashboard.hideLoadingMsg();
                 });
             });
@@ -94,6 +115,9 @@
                         Math.min(78, Number(page.querySelector("#HeroHeightVh").value) || 64)
                     );
                     config.SeerrUrl = (page.querySelector("#SeerrUrl").value || "http://seerr:5055").trim();
+                    config.SeerrApiKey = page.querySelector("#SeerrApiKey").value.trim();
+                    config.JellyfinUrl = (page.querySelector("#JellyfinUrl").value || "http://127.0.0.1:8096").trim();
+                    config.JellyfinApiKey = page.querySelector("#JellyfinApiKey").value.trim();
                     return ApiClient.updatePluginConfiguration(pluginId, config);
                 }).then(function (result) {
                     Dashboard.processPluginConfigurationUpdateResult(result);

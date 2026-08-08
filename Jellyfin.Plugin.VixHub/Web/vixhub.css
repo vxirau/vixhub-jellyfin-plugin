@@ -29,6 +29,12 @@
   background-color: transparent !important;
 }
 
+/* Playback owns the entire viewport. Leaving the browsing navbar above the
+   native player obscures video and duplicates the player's own controls. */
+.vixhub-route-playback header.vixhub-navbar {
+  display: none !important;
+}
+
 .vixhub-theme body {
   overflow-x: hidden;
   color: var(--vixhub-text);
@@ -314,19 +320,19 @@
 .vixhub-hero__progress {
   position: relative;
   width: 3.5rem;
-  height: 2px;
+  height: 4px;
   overflow: hidden;
-  border-radius: 99px;
+  border-radius: 999px !important;
   background: rgba(255, 255, 255, .2);
 }
 
 .vixhub-hero__progress-value {
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
+  inset: 0 auto 0 0;
+  width: 0;
+  border-radius: 999px !important;
   background: var(--vixhub-accent);
-  transform-origin: left center;
-  transition: transform 360ms cubic-bezier(.16, 1, .3, 1);
+  transition: width 360ms cubic-bezier(.16, 1, .3, 1);
 }
 
 .vixhub-hero--loading::after {
@@ -493,6 +499,10 @@
 }
 
 @media (min-width: 721px) {
+  .vixhub-route-detail .itemDetailPage:has(.detailLogo) .detailRibbon {
+    padding-top: 8.35rem !important;
+  }
+
   .vixhub-route-detail .itemBackdrop {
     height: min(67vh, 44rem) !important;
   }
@@ -521,7 +531,32 @@
   }
 
   .vixhub-route-detail .detailPagePrimaryContent {
-    width: min(43rem, 58vw);
+    width: 100%;
+  }
+
+  .vixhub-route-detail .detailSection:has(> .nextUpSection:not(.hide)) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(24rem, .85fr);
+    align-items: start;
+    gap: clamp(1.5rem, 3vw, 3.5rem);
+    width: 100%;
+  }
+
+  .vixhub-route-detail .detailSection:has(> .nextUpSection:not(.hide)) > .detailSectionContent {
+    grid-column: 1;
+    min-width: 0;
+  }
+
+  .vixhub-route-detail .detailSection:has(> .nextUpSection:not(.hide)) > .nextUpSection {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .vixhub-route-detail .detailSection:has(> .nextUpSection:not(.hide)) > .verticalSection:not(.nextUpSection) {
+    grid-column: 1 / -1;
+    min-width: 0;
   }
 }
 
@@ -781,9 +816,17 @@
 
 @media (max-width: 1040px) {
   .vixhub-route-detail .detailRibbon { display: block; }
+
+  .vixhub-route-detail .detailSection:has(> .nextUpSection:not(.hide)) {
+    display: block;
+  }
 }
 
 @media (max-width: 720px) {
+  .vixhub-route-detail .itemDetailPage {
+    overflow-x: clip;
+  }
+
   .vixhub-route-detail .backdropContainer {
     height: 22rem;
   }
@@ -793,10 +836,15 @@
   }
 
   .vixhub-route-detail .detailLogo {
+    display: block !important;
     top: 5.25rem !important;
     left: .85rem !important;
     width: min(22rem, 74vw) !important;
     height: 6.5rem !important;
+  }
+
+  .vixhub-route-detail .itemDetailPage:has(.detailLogo) .detailRibbon {
+    padding-top: 7.5rem !important;
   }
 
   .vixhub-route-detail .detailPagePrimaryContainer {
@@ -828,6 +876,12 @@
     overflow-x: auto;
     padding: .15rem 0 .4rem;
     scrollbar-width: none;
+  }
+
+  .vixhub-route-detail .mainDetailButtons .btnPlay,
+  .vixhub-route-detail .mainDetailButtons .btnResume,
+  .vixhub-route-detail .mainDetailButtons .btnPlayTrailer {
+    flex: 0 0 auto;
   }
 
   .vixhub-route-detail .mainDetailButtons::-webkit-scrollbar {
@@ -937,7 +991,7 @@
   grid-auto-flow: column;
   gap: .7rem;
   overflow-x: auto;
-  padding: .1rem .1rem .65rem;
+  padding: .75rem .65rem 1.25rem;
   scrollbar-width: none;
   scroll-snap-type: inline proximity;
 }
@@ -946,17 +1000,96 @@
   display: none;
 }
 
+.vixhub-poster-rail {
+  display: grid;
+  grid-auto-columns: clamp(9.5rem, 13vw, 12.5rem);
+  grid-auto-flow: column;
+  gap: clamp(.7rem, 1vw, 1rem);
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding: .75rem .65rem 1.35rem;
+  scrollbar-width: none;
+  scroll-snap-type: inline proximity;
+}
+
+.vixhub-poster-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.vixhub-poster-card {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: .65rem;
+  color: rgba(247, 247, 245, .92);
+  text-decoration: none;
+  scroll-snap-align: start;
+  transition: filter 220ms ease-out, transform 300ms cubic-bezier(.16, 1, .3, 1);
+}
+
+.vixhub-poster-card__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: .85rem;
+  background: #1d2022;
+  object-fit: cover;
+  box-shadow: 0 .85rem 1.8rem rgba(3, 6, 8, .18);
+}
+
+.vixhub-poster-card__body {
+  display: grid;
+  gap: .18rem;
+  padding-inline: .08rem;
+}
+
+.vixhub-poster-card__title,
+.vixhub-poster-card__meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vixhub-poster-card__title {
+  font-size: .92rem;
+  font-weight: 620;
+}
+
+.vixhub-poster-card__meta {
+  color: var(--vixhub-muted);
+  font-size: .76rem;
+}
+
+.vixhub-poster-card:hover,
+.vixhub-poster-card:focus-visible {
+  filter: brightness(1.045);
+  transform: translateY(-.16rem) scale(1.025);
+}
+
+.vixhub-poster-card:first-child,
+.vixhub-facet-card:first-child,
+.vixhub-home-card:first-child {
+  transform-origin: left center;
+}
+
+.vixhub-poster-card:last-child,
+.vixhub-facet-card:last-child,
+.vixhub-home-card:last-child {
+  transform-origin: right center;
+}
+
 .vixhub-facet-card {
   position: relative;
   display: flex;
-  min-height: 5.5rem;
+  min-height: 7rem;
+  aspect-ratio: 16 / 9;
   align-items: flex-end;
   justify-content: space-between;
   gap: .75rem;
   overflow: hidden;
   padding: 1rem;
   border: 0;
-  border-radius: .7rem;
+  border-radius: .85rem;
   background:
     radial-gradient(circle at calc(82% - var(--vixhub-facet-index) * 3%) 18%, rgba(255, 255, 255, .13), transparent 31%),
     linear-gradient(135deg, hsl(calc(164 + var(--vixhub-facet-index) * 14) 24% 25%), #151a1d);
@@ -965,6 +1098,34 @@
   text-decoration: none;
   scroll-snap-align: start;
   transition: transform 300ms ease-out, filter 220ms ease-out;
+}
+
+.vixhub-facet-card__image,
+.vixhub-facet-card__shade {
+  position: absolute;
+  inset: 0;
+}
+
+.vixhub-facet-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vixhub-facet-card__image--logo {
+  box-sizing: border-box;
+  padding: clamp(1.25rem, 2.6vw, 2.4rem);
+  background: #171b1e;
+  object-fit: contain;
+}
+
+.vixhub-facet-card__shade {
+  background: linear-gradient(0deg, rgba(10, 13, 15, .88), rgba(10, 13, 15, .12) 72%);
+}
+
+.vixhub-facet-card__name,
+.vixhub-facet-card__arrow {
+  position: relative;
 }
 
 .vixhub-facet-card:hover,
@@ -1018,6 +1179,65 @@
 
 .vixhub-live-promo__link small {
   color: var(--vixhub-muted);
+}
+
+.vixhub-live-section__heading {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.vixhub-live-section__guide {
+  align-self: end;
+  color: rgba(247, 247, 245, .66);
+  font-size: .82rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.vixhub-live-section__guide:hover,
+.vixhub-live-section__guide:focus-visible {
+  color: #f7f7f5;
+}
+
+.vixhub-live-card__body {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.vixhub-live-card__badge {
+  grid-row: 1 / span 2;
+  align-self: center;
+  padding: .28rem .42rem;
+  border-radius: .22rem;
+  background: #e42836;
+  color: #fff;
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  line-height: 1;
+}
+
+.vixhub-live-card__progress {
+  position: absolute;
+  right: .7rem;
+  bottom: .45rem;
+  left: .7rem;
+  height: .18rem;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, .24);
+}
+
+.vixhub-live-card__progress-value {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: #fff;
+  transform-origin: left center;
+}
+
+.vixhub-image-unavailable {
+  opacity: 0;
 }
 
 header.vixhub-navbar a[href^="#/livetv"] {
@@ -1168,7 +1388,8 @@ header.vixhub-navbar a[href^="#/livetv"][aria-current="page"] {
 
 .layout-tv .card:focus-within .cardScalable,
 .layout-tv .vixhub-home-card:focus-visible,
-.layout-tv .vixhub-facet-card:focus-visible {
+.layout-tv .vixhub-facet-card:focus-visible,
+.layout-tv .vixhub-poster-card:focus-visible {
   outline: 3px solid var(--vixhub-accent);
   outline-offset: .28rem;
   box-shadow: none;
@@ -1186,6 +1407,10 @@ header.vixhub-navbar a[href^="#/livetv"][aria-current="page"] {
 
   .vixhub-facet-rail {
     grid-auto-columns: min(44vw, 12rem);
+  }
+
+  .vixhub-poster-rail {
+    grid-auto-columns: min(38vw, 10.5rem);
   }
 
   header.vixhub-navbar a[href^="#/livetv"] {
@@ -1447,7 +1672,7 @@ header.vixhub-dashboardbar button[aria-label="User Menu"] {
   gap: clamp(.7rem, 1vw, 1rem);
   overflow-x: auto;
   overscroll-behavior-inline: contain;
-  padding: .15rem .1rem .8rem;
+  padding: .75rem .65rem 1.35rem;
   scrollbar-width: none;
   scroll-snap-type: inline proximity;
 }
@@ -1463,7 +1688,7 @@ header.vixhub-dashboardbar button[aria-label="User Menu"] {
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border: 1px solid transparent;
-  border-radius: .75rem;
+  border-radius: .85rem;
   background: transparent;
   box-shadow: none;
   color: rgba(247, 247, 245, .7);
@@ -1815,6 +2040,12 @@ header.vixhub-dashboardbar button[aria-label="User Menu"] {
   padding-block: .35rem 1.25rem;
 }
 
+.layout-tv .vixhub-poster-rail {
+  grid-auto-columns: clamp(12rem, 14vw, 15rem);
+  gap: 1.15rem;
+  padding-block: .35rem 1.25rem;
+}
+
 .layout-tv .vixhub-hero__button {
   min-height: 3.5rem;
   padding-inline: 1.5rem;
@@ -1915,7 +2146,8 @@ header.vixhub-dashboardbar button[aria-label="User Menu"] {
 
 .layout-tv .card:focus-within .cardScalable,
 .layout-tv .vixhub-home-card:focus-visible,
-.layout-tv .vixhub-facet-card:focus-visible {
+.layout-tv .vixhub-facet-card:focus-visible,
+.layout-tv .vixhub-poster-card:focus-visible {
   outline: 3px solid var(--vixhub-accent);
   outline-offset: .28rem;
   box-shadow: none;

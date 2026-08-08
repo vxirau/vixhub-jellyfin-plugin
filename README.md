@@ -11,12 +11,12 @@ VixHub packages a personalized Jellyfin home experience as one versioned release
 - personalized recommendations that exclude titles the current user has watched;
 - a coherent web design system for cards, controls, menus, dialogs, forms, and details.
 
-The plugin targets Jellyfin Server 12 and `net10.0`. Version `0.6.9.0` has
+The plugin targets Jellyfin Server 12 and `net10.0`. Version `0.7.0.0` has
 been validated with Jellyfin Server `12.0.0-rc4`.
 
 ## Why there is a bootstrap
 
-Jellyfin plugins can expose APIs, settings pages, and static resources, but Jellyfin Web does not currently provide a stable frontend-plugin loader. The bootstrap only adds two stable references to `index.html` and points the existing favicon/manifest tags at the plugin. All UI behavior and styling remain embedded in the plugin DLL. Plugin assets carry a version-derived ETag and require revalidation, so installing a new plugin cannot strand clients on stale CSS, JavaScript, or branding.
+Jellyfin plugins can expose APIs, settings pages, and static resources, but Jellyfin Web does not currently provide a stable frontend-plugin loader. The bootstrap only adds two stable references to `index.html` and points the existing favicon/manifest tags at the plugin. All UI behavior and styling remain embedded in the plugin DLL. Plugin assets carry a version-and-build-derived ETag and require revalidation, so installing a new plugin—or rebuilding a test candidate—cannot strand clients on stale CSS, JavaScript, or branding.
 
 The bootstrap is reapplied at container start, so replacing or recreating the Jellyfin image does not remove VixHub. It is idempotent and removes older VixHub/SlideshowPure injections before adding the current bundle. Both the plugin directory and bootstrap must be mounted from persistent storage; nothing important lives in the container's writable layer.
 
@@ -34,7 +34,7 @@ Requires the .NET 10 SDK:
 ./scripts/package.sh
 ```
 
-The package is written to `artifacts/vixhub-plugin_0.6.9.0.zip`.
+The package is written to `artifacts/vixhub-plugin_0.7.0.0.zip`.
 
 ## Plugin repository
 
@@ -48,7 +48,7 @@ Jellyfin can then update the server plugin through its normal plugin update task
 
 ## Manual development installation
 
-1. Extract the plugin ZIP into the Jellyfin plugin directory as `VixHub Plugin_0.6.9.0`.
+1. Extract the plugin ZIP into the Jellyfin plugin directory as `VixHub Plugin_0.7.0.0`.
 2. Place `bootstrap/apply-web-customizations.sh` on persistent storage.
 3. Start the Jellyfin container through that script:
 
@@ -63,6 +63,10 @@ Jellyfin can then update the server plugin through its normal plugin update task
 4. Restart Jellyfin and force-refresh Jellyfin Web once.
 
 If the plugin is absent or fails to load, the VixHub asset requests return `404` and the standard Jellyfin interface remains usable.
+
+## Discovery integrations
+
+The plugin settings page accepts server-side Seerr and Jellyfin API keys. Seerr supplies popularity order, recommendation candidates, and discovery artwork; every title is still intersected with the current Jellyfin library. The Jellyfin key is an optional Live TV bridge for preview releases where migrated user sessions return an empty guide. Both keys remain server-side and are never included in browser responses or artwork URLs.
 
 ## Repository layout
 
