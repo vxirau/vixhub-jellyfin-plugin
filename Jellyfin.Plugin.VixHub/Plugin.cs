@@ -23,7 +23,7 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     public override string Name => "VixHub · Plugin";
 
     public override string Description =>
-        "VixHub branding, recommendation hero, navigation, and personalized home sections.";
+        "VixHub branding, cinematic navigation, library discovery, and personalized home sections.";
 
     public override Guid Id => Guid.Parse("050ebc28-679f-4f80-9a74-89f4dc72fac6");
 

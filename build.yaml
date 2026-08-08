@@ -1,10 +1,10 @@
 ---
 name: "VixHub · Plugin"
 guid: "050ebc28-679f-4f80-9a74-89f4dc72fac6"
-version: "0.1.0.0"
+version: "0.6.8.0"
 targetAbi: "12.0.0.0"
 framework: "net10.0"
-overview: "VixHub branding, recommendation hero, navigation, and personalized home sections."
+overview: "VixHub branding, discovery, Live TV navigation, and personalized home sections."
 description: >
   Packages the VixHub web experience as a Jellyfin server plugin with a small,
   idempotent bootstrap for Jellyfin Web.
@@ -13,4 +13,5 @@ owner: "vxirau"
 artifacts:
   - "Jellyfin.Plugin.VixHub.dll"
 changelog: >
-  Initial Jellyfin 12 RC release with the persistent VixHub web bundle.
+  Adds a fixed discovery home, Live TV navigation, quieter card motion, broad
+  component polish, playback-safe hero suspension, and managed home ordering.

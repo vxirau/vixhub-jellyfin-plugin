@@ -13,7 +13,13 @@ public sealed class PluginConfiguration : BasePluginConfiguration
 
     public bool EnableHomeSections { get; set; } = true;
 
+    public bool EnableDiscovery { get; set; } = true;
+
+    public bool LockHomeLayout { get; set; } = true;
+
     public bool EnableLocalTrailerVideo { get; set; } = true;
 
     public int HeroHeightVh { get; set; } = 64;
+
+    public string SeerrUrl { get; set; } = "http://seerr:5055";
 }

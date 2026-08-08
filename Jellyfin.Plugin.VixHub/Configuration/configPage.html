@@ -9,12 +9,25 @@
     <div data-role="content">
         <div class="content-primary">
             <form id="VixHubPluginConfigForm">
-                <h1>VixHub · Plugin</h1>
-                <p>Configure the web hero, navigation, local trailer playback, and VixHub home sections.</p>
+                <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+                    <img src="/VixHub/Assets/vixhub-mark.png" alt="" style="width:3.5rem;height:3.5rem;object-fit:contain">
+                    <div>
+                        <h1 style="margin:0">VixHub · Plugin</h1>
+                        <p style="margin:.35rem 0 0">Configure the complete VixHub web experience.</p>
+                    </div>
+                </div>
 
                 <label class="checkboxContainer">
                     <input is="emby-checkbox" type="checkbox" id="EnableHero">
                     <span>Recommendation hero</span>
+                </label>
+                <label class="checkboxContainer">
+                    <input is="emby-checkbox" type="checkbox" id="EnableDiscovery">
+                    <span>Library discovery sections</span>
+                </label>
+                <label class="checkboxContainer">
+                    <input is="emby-checkbox" type="checkbox" id="LockHomeLayout">
+                    <span>Use the VixHub-managed home order for every user</span>
                 </label>
                 <label class="checkboxContainer">
                     <input is="emby-checkbox" type="checkbox" id="EnableNavbar">
@@ -35,6 +48,12 @@
                     <div class="fieldDescription">Percentage of the viewport height, clamped for smaller and larger screens.</div>
                 </div>
 
+                <div class="inputContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="SeerrUrl">Seerr server URL</label>
+                    <input is="emby-input" type="url" id="SeerrUrl" placeholder="http://seerr:5055">
+                    <div class="fieldDescription">Server-side Seerr address. The library remains the authority, so VixHub never displays unavailable titles.</div>
+                </div>
+
                 <button is="emby-button" type="submit" class="raised button-submit block">
                     <span>Save</span>
                 </button>
@@ -52,11 +71,12 @@
             page.addEventListener("pageshow", function () {
                 Dashboard.showLoadingMsg();
                 ApiClient.getPluginConfiguration(pluginId).then(function (config) {
-                    ["EnableHero", "EnableNavbar", "EnableHomeSections", "EnableLocalTrailerVideo"]
+                    ["EnableHero", "EnableNavbar", "EnableHomeSections", "EnableDiscovery", "LockHomeLayout", "EnableLocalTrailerVideo"]
                         .forEach(function (key) {
                             page.querySelector("#" + key).checked = Boolean(config[key]);
                         });
                     page.querySelector("#HeroHeightVh").value = config.HeroHeightVh || 64;
+                    page.querySelector("#SeerrUrl").value = config.SeerrUrl || "http://seerr:5055";
                     Dashboard.hideLoadingMsg();
                 });
             });
@@ -65,7 +85,7 @@
                 event.preventDefault();
                 Dashboard.showLoadingMsg();
                 ApiClient.getPluginConfiguration(pluginId).then(function (config) {
-                    ["EnableHero", "EnableNavbar", "EnableHomeSections", "EnableLocalTrailerVideo"]
+                    ["EnableHero", "EnableNavbar", "EnableHomeSections", "EnableDiscovery", "LockHomeLayout", "EnableLocalTrailerVideo"]
                         .forEach(function (key) {
                             config[key] = page.querySelector("#" + key).checked;
                         });
@@ -73,6 +93,7 @@
                         54,
                         Math.min(78, Number(page.querySelector("#HeroHeightVh").value) || 64)
                     );
+                    config.SeerrUrl = (page.querySelector("#SeerrUrl").value || "http://seerr:5055").trim();
                     return ApiClient.updatePluginConfiguration(pluginId, config);
                 }).then(function (result) {
                     Dashboard.processPluginConfigurationUpdateResult(result);

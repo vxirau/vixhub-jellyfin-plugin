@@ -184,6 +184,14 @@
   gap: .7rem;
 }
 
+.vixhub-hero__play-context {
+  display: contents;
+}
+
+.vixhub-playback-relay {
+  display: none !important;
+}
+
 .vixhub-hero__button {
   display: inline-flex;
   min-height: 3rem;
@@ -728,11 +736,11 @@
 .vixhub-route-detail .personCard .cardScalable,
 .vixhub-route-detail .personCard .cardImageContainer,
 .vixhub-route-detail .personCard .cardContent {
-  border-radius: 50%;
+  border-radius: .7rem;
 }
 
 .vixhub-route-detail .personCard .cardScalable {
-  aspect-ratio: 1;
+  aspect-ratio: 2 / 3;
 }
 
 .vixhub-route-detail .personCard .cardImageContainer {
@@ -740,7 +748,7 @@
 }
 
 .vixhub-route-detail .personCard .cardText {
-  text-align: center;
+  text-align: left;
 }
 
 .vixhub-route-detail .listItem {
@@ -854,6 +862,337 @@
   }
 }
 
+/* VixHub 0.6 design system: compact Disney-inspired motion, discovery, and
+   consistent controls across web, mobile web, and web-based TV clients. */
+.vixhub-hero__progress,
+.vixhub-hero__progress-value {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.vixhub-theme:not(.vixhub-route-playback) .vixhub-page-enter {
+  animation-duration: 320ms;
+}
+
+@keyframes vixhub-page-enter {
+  from { opacity: .72; transform: translateY(.35rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.vixhub-browse-section .sectionTitle {
+  margin-bottom: .35rem;
+}
+
+.vixhub-browse-section .itemsContainer {
+  display: grid !important;
+  grid-auto-columns: minmax(15rem, 1fr);
+  grid-auto-flow: column;
+  gap: clamp(.7rem, 1.2vw, 1.1rem);
+  padding-right: clamp(1rem, 3.3vw, 3.5rem);
+}
+
+.vixhub-browse-section .card {
+  width: auto !important;
+  min-width: min(22vw, 20rem);
+}
+
+.vixhub-live-library-card .cardPadder {
+  background:
+    radial-gradient(circle at 76% 18%, rgba(118, 199, 183, .3), transparent 34%),
+    linear-gradient(135deg, #1c3031, #101719) !important;
+}
+
+.vixhub-live-library-card .cardImageIcon {
+  color: #bce9df;
+}
+
+.vixhub-discovery {
+  display: contents;
+}
+
+.vixhub-discovery--lazy {
+  display: block;
+  min-height: 1px;
+  content-visibility: auto;
+}
+
+.vixhub-discovery > .vixhub-home-section:first-child {
+  margin-top: clamp(.5rem, 1.5vw, 1.5rem);
+}
+
+.vixhub-facet-rail {
+  display: grid;
+  grid-auto-columns: clamp(11rem, 16vw, 15rem);
+  grid-auto-flow: column;
+  gap: .7rem;
+  overflow-x: auto;
+  padding: .1rem .1rem .65rem;
+  scrollbar-width: none;
+  scroll-snap-type: inline proximity;
+}
+
+.vixhub-facet-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.vixhub-facet-card {
+  position: relative;
+  display: flex;
+  min-height: 5.5rem;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: .75rem;
+  overflow: hidden;
+  padding: 1rem;
+  border: 0;
+  border-radius: .7rem;
+  background:
+    radial-gradient(circle at calc(82% - var(--vixhub-facet-index) * 3%) 18%, rgba(255, 255, 255, .13), transparent 31%),
+    linear-gradient(135deg, hsl(calc(164 + var(--vixhub-facet-index) * 14) 24% 25%), #151a1d);
+  box-sizing: border-box;
+  color: #f7f7f5;
+  text-decoration: none;
+  scroll-snap-align: start;
+  transition: transform 300ms ease-out, filter 220ms ease-out;
+}
+
+.vixhub-facet-card:hover,
+.vixhub-facet-card:focus-visible {
+  filter: brightness(1.08);
+  transform: scale(1.03);
+}
+
+.vixhub-facet-card__name {
+  font-size: .98rem;
+  font-weight: 650;
+  letter-spacing: -.015em;
+}
+
+.vixhub-facet-card__arrow {
+  color: rgba(247, 247, 245, .65);
+  font-size: 1.2rem;
+}
+
+.vixhub-live-promo__link {
+  display: flex;
+  min-height: 5.5rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  border: 0;
+  border-radius: .7rem;
+  background: linear-gradient(110deg, rgba(31, 69, 66, .86), rgba(20, 26, 29, .94));
+  color: #f7f7f5;
+  text-decoration: none;
+  transition: filter 220ms ease-out, transform 300ms ease-out;
+}
+
+.vixhub-live-promo__link:hover,
+.vixhub-live-promo__link:focus-visible {
+  filter: brightness(1.08);
+  transform: scale(1.015);
+}
+
+.vixhub-live-promo__link .vixhub-lucide {
+  width: 1.8rem;
+  height: 1.8rem;
+  color: #a9e1d6;
+}
+
+.vixhub-live-promo__link > span:nth-child(2) {
+  display: grid;
+  flex: 1;
+  gap: .2rem;
+}
+
+.vixhub-live-promo__link small {
+  color: var(--vixhub-muted);
+}
+
+header.vixhub-navbar a[href^="#/livetv"] {
+  min-height: 2.35rem;
+  padding-inline: .65rem;
+  color: rgba(247, 247, 245, .72);
+  font-weight: 560;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+header.vixhub-navbar a[href^="#/livetv"]:hover,
+header.vixhub-navbar a[href^="#/livetv"]:focus-visible {
+  background: rgba(255, 255, 255, .055);
+  color: #f7f7f5;
+}
+
+header.vixhub-navbar a[href^="#/livetv"][aria-current="page"] {
+  color: #f7f7f5;
+}
+
+.vixhub-theme .cardScalable {
+  border: 0;
+  transition: transform 300ms ease-out, filter 220ms ease-out;
+}
+
+.vixhub-theme .card:hover .cardScalable,
+.vixhub-theme .card:focus-within .cardScalable {
+  border-color: transparent;
+  box-shadow: none;
+  filter: brightness(1.035);
+  transform: scale(1.03);
+}
+
+.vixhub-home-card {
+  border: 0;
+  transition: transform 300ms ease-out, filter 220ms ease-out;
+}
+
+.vixhub-home-card:hover,
+.vixhub-home-card:focus-visible {
+  border-color: transparent;
+  box-shadow: none;
+  filter: brightness(1.035);
+  transform: scale(1.03);
+}
+
+.vixhub-home-card:hover .vixhub-home-card__image,
+.vixhub-home-card:focus-visible .vixhub-home-card__image {
+  transform: none;
+}
+
+.vixhub-theme .cardOverlayContainer,
+.vixhub-theme .cardOverlayButton-br {
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
+}
+
+.vixhub-theme .cardOverlayButton,
+.vixhub-theme .cardOverlayButton-hover,
+.vixhub-theme .btnUserData,
+.vixhub-theme .btnCardOptions {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: rgba(255, 255, 255, .88);
+  text-shadow: 0 1px .55rem rgba(0, 0, 0, .92);
+  transition: color 160ms ease, transform 180ms ease-out !important;
+}
+
+.vixhub-theme .cardOverlayButton:hover,
+.vixhub-theme .cardOverlayButton:focus-visible,
+.vixhub-theme .btnUserData:hover,
+.vixhub-theme .btnUserData:focus-visible,
+.vixhub-theme .btnCardOptions:hover,
+.vixhub-theme .btnCardOptions:focus-visible {
+  background: transparent !important;
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.vixhub-theme .itemProgressBar,
+.vixhub-theme .itemProgressBarForeground,
+.vixhub-theme .playbackProgress,
+.vixhub-theme .transcodingProgress {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.vixhub-theme .itemProgressBar {
+  height: 3px;
+  background: rgba(255, 255, 255, .2);
+}
+
+.vixhub-theme .itemProgressBarForeground,
+.vixhub-theme .playbackProgress {
+  background: var(--vixhub-accent);
+}
+
+.vixhub-theme .emby-select,
+.vixhub-theme select,
+.vixhub-theme .selectArrowContainer,
+.vixhub-theme .MuiSelect-select {
+  border-radius: .65rem;
+}
+
+.vixhub-theme .actionSheetMenuItem,
+.vixhub-theme .listItem-border,
+.vixhub-theme .MuiMenuItem-root {
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.vixhub-theme .actionSheetMenuItem:hover,
+.vixhub-theme .actionSheetMenuItem:focus-visible,
+.vixhub-theme .MuiMenuItem-root:hover,
+.vixhub-theme .MuiMenuItem-root:focus-visible {
+  background: rgba(255, 255, 255, .07) !important;
+}
+
+.vixhub-managed-layout-note {
+  display: flex;
+  max-width: 46rem;
+  align-items: center;
+  gap: 1.2rem;
+  margin: clamp(5rem, 12vh, 8rem) auto 2rem;
+  padding: 1.4rem;
+  border: 1px solid var(--vixhub-border);
+  border-radius: 1rem;
+  background: var(--vixhub-surface-strong);
+}
+
+.vixhub-managed-layout-note img {
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: contain;
+}
+
+.vixhub-managed-layout-note h1,
+.vixhub-managed-layout-note p {
+  margin: 0 0 .4rem;
+}
+
+.vixhub-route-homeprefs-locked .page:not(.hide) > :not(.vixhub-managed-layout-note),
+.vixhub-route-homeprefs-locked main > :not(.vixhub-managed-layout-note) {
+  display: none !important;
+}
+
+.layout-tv .card:focus-within .cardScalable,
+.layout-tv .vixhub-home-card:focus-visible,
+.layout-tv .vixhub-facet-card:focus-visible {
+  outline: 3px solid var(--vixhub-accent);
+  outline-offset: .28rem;
+  box-shadow: none;
+  transform: scale(1.03);
+}
+
+@media (max-width: 720px) {
+  .vixhub-browse-section .itemsContainer {
+    grid-auto-columns: min(72vw, 18rem);
+  }
+
+  .vixhub-browse-section .card {
+    min-width: 0;
+  }
+
+  .vixhub-facet-rail {
+    grid-auto-columns: min(44vw, 12rem);
+  }
+
+  header.vixhub-navbar a[href^="#/livetv"] {
+    min-width: 2.55rem;
+    padding-inline: .55rem;
+    font-size: 0;
+  }
+
+  header.vixhub-navbar a[href^="#/livetv"] .MuiButton-startIcon {
+    margin: 0;
+  }
+
+  .vixhub-managed-layout-note {
+    margin-inline: .85rem;
+  }
+}
+
 header.vixhub-navbar {
   top: 0;
   right: 0;
@@ -875,6 +1214,37 @@ header.vixhub-navbar .MuiToolbar-root {
 
 header.vixhub-navbar .MuiStack-root {
   gap: .15rem;
+}
+
+header.vixhub-navbar .vixhub-primary-nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: .15rem;
+}
+
+header.vixhub-navbar .vixhub-primary-nav__link {
+  display: inline-flex;
+  min-height: 2.35rem;
+  align-items: center;
+  gap: .42rem;
+  padding: 0 .65rem;
+  border-radius: .65rem;
+  color: rgba(247, 247, 245, .72);
+  font-size: .88rem;
+  font-weight: 560;
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+header.vixhub-navbar .vixhub-primary-nav__link:hover,
+header.vixhub-navbar .vixhub-primary-nav__link:focus-visible {
+  background: rgba(255, 255, 255, .055);
+  color: #f7f7f5;
+}
+
+header.vixhub-navbar .vixhub-primary-nav__link[aria-current="page"] {
+  color: #f7f7f5;
 }
 
 header.vixhub-navbar a,
@@ -1227,6 +1597,26 @@ header.vixhub-dashboardbar button[aria-label="User Menu"] {
     min-height: 3.45rem;
   }
 
+  header.vixhub-navbar .vixhub-primary-nav {
+    max-width: calc(100vw - 12rem);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  header.vixhub-navbar .vixhub-primary-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  header.vixhub-navbar .vixhub-primary-nav__link {
+    min-width: 2.55rem;
+    justify-content: center;
+    padding-inline: .55rem;
+  }
+
+  header.vixhub-navbar .vixhub-primary-nav__label {
+    display: none;
+  }
+
   header.vixhub-navbar {
     top: 0;
     right: 0;
@@ -1470,4 +1860,54 @@ header.vixhub-dashboardbar button[aria-label="User Menu"] {
   .vixhub-home-card--skeleton {
     animation: none;
   }
+}
+
+/* Final interaction override: reference card motion is a quiet 1.03 scale
+   without the old halo, heavy shadow, or glass pill behind card actions. */
+.vixhub-theme .cardScalable {
+  border: 0;
+  box-shadow: none;
+  transition: transform 300ms ease-out, filter 220ms ease-out;
+}
+
+.vixhub-theme .card:hover .cardScalable,
+.vixhub-theme .card:focus-within .cardScalable {
+  border-color: transparent;
+  box-shadow: none;
+  filter: brightness(1.035);
+  transform: scale(1.03);
+}
+
+.vixhub-theme .cardOverlayContainer,
+.vixhub-theme .cardOverlayButton-br,
+.vixhub-theme .cardOverlayButton,
+.vixhub-theme .cardOverlayButton-hover,
+.vixhub-theme .btnUserData,
+.vixhub-theme .btnCardOptions {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
+}
+
+.vixhub-home-card:hover,
+.vixhub-home-card:focus-visible {
+  border-color: transparent;
+  box-shadow: none;
+  filter: brightness(1.035);
+  transform: scale(1.03);
+}
+
+.vixhub-home-card:hover .vixhub-home-card__image,
+.vixhub-home-card:focus-visible .vixhub-home-card__image {
+  transform: none;
+}
+
+.layout-tv .card:focus-within .cardScalable,
+.layout-tv .vixhub-home-card:focus-visible,
+.layout-tv .vixhub-facet-card:focus-visible {
+  outline: 3px solid var(--vixhub-accent);
+  outline-offset: .28rem;
+  box-shadow: none;
+  transform: scale(1.03);
 }
